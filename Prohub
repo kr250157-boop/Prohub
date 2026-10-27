@@ -1,0 +1,116 @@
+
+-- PRO HUB | Floating Logo UI
+-- ใช้ใน LocalScript ของเกมที่คุณพัฒนา
+-- เปลี่ยน YOUR_IMAGE_ID เป็น Roblox Image Asset ID
+
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local player = Players.LocalPlayer
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "ProHubUI"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local logo = Instance.new("ImageButton")
+logo.Name = "ProHubLogo"
+logo.Size = UDim2.fromOffset(76, 76)
+logo.Position = UDim2.new(0, 18, 0.35, 0)
+logo.BackgroundColor3 = Color3.fromRGB(5, 15, 35)
+logo.Image = "rbxassetid://YOUR_IMAGE_ID"
+logo.ScaleType = Enum.ScaleType.Fit
+logo.Active = true
+logo.Parent = gui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(1, 0)
+corner.Parent = logo
+
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(40, 160, 255)
+stroke.Thickness = 2
+stroke.Parent = logo
+
+local panel = Instance.new("Frame")
+panel.Name = "MainPanel"
+panel.Size = UDim2.new(0.82, 0, 0, 300)
+panel.Position = UDim2.new(0.09, 0, 0.25, 0)
+panel.BackgroundColor3 = Color3.fromRGB(7, 17, 38)
+panel.Visible = false
+panel.Parent = gui
+
+local panelCorner = Instance.new("UICorner")
+panelCorner.CornerRadius = UDim.new(0, 14)
+panelCorner.Parent = panel
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -20, 0, 48)
+title.Position = UDim2.fromOffset(10, 5)
+title.BackgroundTransparency = 1
+title.Text = "PRO HUB"
+title.TextColor3 = Color3.fromRGB(70, 185, 255)
+title.TextScaled = true
+title.Font = Enum.Font.GothamBold
+title.Parent = panel
+
+local info = Instance.new("TextLabel")
+info.Size = UDim2.new(1, -24, 0, 70)
+info.Position = UDim2.fromOffset(12, 65)
+info.BackgroundTransparency = 1
+info.Text = "Brookhaven Edition\nEXZ Blue Interface"
+info.TextColor3 = Color3.fromRGB(230, 240, 255)
+info.TextScaled = true
+info.Parent = panel
+
+local close = Instance.new("TextButton")
+close.Size = UDim2.new(1, -24, 0, 44)
+close.Position = UDim2.new(0, 12, 1, -56)
+close.Text = "CLOSE MENU"
+close.TextColor3 = Color3.new(1, 1, 1)
+close.BackgroundColor3 = Color3.fromRGB(20, 100, 190)
+close.Parent = panel
+
+Instance.new("UICorner", close).CornerRadius =
+    UDim.new(0, 10)
+
+logo.Activated:Connect(function()
+    panel.Visible = not panel.Visible
+end)
+
+close.Activated:Connect(function()
+    panel.Visible = false
+end)
+
+-- ลากโลโก้ด้วยนิ้วหรือเมาส์
+local dragging = false
+local dragStart, startPos, dragInput
+
+logo.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch
+        or input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = logo.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if dragging and (
+        input.UserInputType == Enum.UserInputType.Touch
+        or input.UserInputType == Enum.UserInputType.MouseMovement
+    ) then
+        local delta = input.Position - dragStart
+        logo.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
+    end
+end)
